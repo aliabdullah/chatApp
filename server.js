@@ -24,21 +24,25 @@ server.on("connection", function (socket) {
   	socket.on('connected', function(username) {
   		onlineUsersNames.push(username);
   		onlineUsersIds.push(socket.id);
-  		console.log("User " + username + " is online");
+  		var message = "User " + username + " is online";
+  		console.log(message);
+  		server.sockets.emit('connectUser', message);
   	});
   	
   	socket.on('disconnect', function() {
   		var index = onlineUsersIds.indexOf(socket.id);
   		var id = socket.id;
-		console.log("User " + onlineUsersNames[index] + " is offline");
+		var message = "User " + onlineUsersNames[index] + " is offline";
+		console.log(message);
 		onlineUsersNames.splice(index, 1);
 		onlineUsersIds.splice(index, 1);
+		server.sockets.emit('disconnectUser', message);
 	});
 
   	socket.on('message', function(userMessage) {
   		var message = userMessage.user + ": " + userMessage.message;
   		console.log("" + message);
-  		server.emit('incomeMessage', message);
+  		server.sockets.emit('incomeMessage', message);
   	});
 
   	//setTimeout(function() {}, 5000);

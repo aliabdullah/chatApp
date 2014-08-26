@@ -1,8 +1,8 @@
 var io = require('socket.io-client')
 var readline = require('readline');
-var readlineSync = require('readline-sync');
 var url     = "ws://localhost:3000";
 var options = { transports: ['websocket'] };
+var color = require('colors');
 
 var rl = readline.createInterface({
 	input: process.stdin,
@@ -19,17 +19,9 @@ if(argumentLength < 3 || process.argv.slice(2).toString()[0] != '-') {
 	var name = process.argv.slice(2).toString().substring(1);
 	client.on('connect', function() {
 		client.emit('connected', name);
-		console.log("You Logged in as: " + name);
-		/*
-		rl.question("Me: ", function(text) {
-			client.emit('message', {message: text, user: name});
-			rl.close();
-		}
-		*/
-
-		//var text = readlineSync.question("me: ");
-		console.log("me: ");
+		
 		rl.on('line', function(text) {
+			
 			client.emit('message', {message: text, user: name});
 		});
 	});
@@ -46,6 +38,14 @@ if(argumentLength < 3 || process.argv.slice(2).toString()[0] != '-') {
 		}
 	});
 	client.on('incomeMessage', function(message) {
-		console.log(message);
+		console.log(message.bold.green);
+	});
+
+	client.on('disconnectUser', function(message) {
+		console.log(message.bold.red);
+	});
+
+	client.on('connectUser', function(message) {
+		console.log(message.bold.blue);
 	});
 }
